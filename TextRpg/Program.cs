@@ -84,14 +84,14 @@ public class Menu
         Console.WriteLine("\n인벤토리\n보유 중인 아이템을 관리할 수 있습니다.\n");
         Console.WriteLine($"[아이템 목록]");
         inventory.ItemList();
-        Console.Write("\n0. 나가기\n\n원하시는 행동을 입력해주세요.\n>> ");
+        Console.Write("\n1. 장착 관리\n0. 나가기\n\n원하시는 행동을 입력해주세요.\n>> ");
         string input = Console.ReadLine();
 
         switch (input)
         {
             case "1":
                 Console.Clear();
-                ShowStatus();
+                ShowEquipList();
                 break;
 
             case "0":
@@ -104,6 +104,57 @@ public class Menu
                 ShowInventoryList();
                 break;
         }
+    }
+
+    public void ShowEquipList()
+    {
+        Console.WriteLine("\n인벤토리 - 장착 관리\n보유 중인 아이템을 관리할 수 있습니다.\n");
+        Console.WriteLine($"[아이템 목록]");
+        inventory.ItemEquip();
+        Console.Write("\n0. 나가기\n\n원하시는 행동을 입력해주세요.\n>> ");
+        string input = Console.ReadLine();
+
+        switch (input)
+        {
+            case "1":
+
+            case "2":
+
+            case "3":
+
+            case "4":
+
+            case "5":
+
+            case "6":
+                Equip(input);
+                break;
+
+            case "0":
+                Console.Clear();
+                ShowInventoryList();
+                break;
+
+            default:
+                Console.Clear();
+                ShowEquipList();
+                break;
+        }
+    }
+
+    public void Equip(string input)
+    {
+        if (inventory.inventory[Int32.Parse(input) - 1].Equip == false)
+        {
+            inventory.inventory[Int32.Parse(input) - 1].Equip = true;
+        }
+        else
+        {
+            inventory.inventory[Int32.Parse(input) - 1].Equip = false;
+        }
+        inventory.inventory[Int32.Parse(input) - 1].EquipOption(status);
+        Console.Clear();
+        ShowEquipList();
     }
 
     public void ShowShopList()
@@ -173,9 +224,16 @@ public class Menu
 
     public void CanBuy(string input)
     {
-        if (status.gold >= shop.shop[Int32.Parse(input)-1].Price)
+        if (shop.shop[Int32.Parse(input) - 1].CanBuy == false)
+        {
+            Console.Clear();
+            Console.WriteLine("\n이미 구매한 아이템입니다.");
+            ShowBuyItem();
+        }
+        else if (status.gold >= shop.shop[Int32.Parse(input) - 1].Price)
         {
             status.gold -= shop.shop[Int32.Parse(input) - 1].Price;
+            inventory.inventory.Add(shop.shop[Int32.Parse(input) - 1]);
             shop.shop[Int32.Parse(input) - 1].CanBuy = false;
             Console.Clear();
             ShowBuyItem();
@@ -183,7 +241,7 @@ public class Menu
         else
         {
             Console.Clear();
-            Console.WriteLine("보유골드가 부족합니다.");
+            Console.WriteLine("\n보유골드가 부족합니다.");
             ShowBuyItem();
         }
     }
@@ -203,7 +261,7 @@ public class Status
 
     public Status()
     {
-        level = 01; power = 10; defense = 5; health = 100; gold = 1500;
+        level = 01; power = 10; defense = 5; health = 100; gold = 3500;
         name = "Chad"; classes = "( 전사 )";
         lev = level.ToString().Length == 1 ? $"0{level.ToString()}" : level.ToString() ;
     }
@@ -211,11 +269,12 @@ public class Status
 
 public class Item
 {
-    public string Name { get; }
+    public string Name { get; set; }
     public string Option { get; }
     public string Explanation { get; }
 
     public bool CanBuy { get; set; } = true;
+    public bool Equip { get; set; } = false;
 
     public int Price { get; }
 
@@ -226,42 +285,80 @@ public class Item
         Explanation = explanation;
         Price = price;
     }
+
+    public virtual void EquipOption(Status status) { }
 }
 
 public class Item1 : Item
 {
     public Item1() : base("수련자 갑옷      ", "  방어력 +5  ", "  수련에 도움을 주는 갑옷입니다.                    ",1000) { }
+
+    public override void EquipOption(Status status)
+    {
+        int i = Equip == true ? 1 : -1;
+        status.defense += 5 * i;
+    }
 }
 
 public class Item2 : Item
 {
     public Item2() : base("무쇠갑옷         ", "  방어력 +9  ", "  무쇠로 만들어져 튼튼한 갑옷입니다.                ",2000) { }
+
+    public override void EquipOption(Status status)
+    {
+        int i = Equip == true ? 1 : -1;
+        status.defense += 9 * i;
+    }
 }
 
 public class Item3 : Item
 {
     public Item3() : base("스파르타의 갑옷  ", "  방어력 +15 ", "  스파르타의 전사들이 사용했다는 전설의 갑옷입니다. ",3500) { }
+
+    public override void EquipOption(Status status)
+    {
+        int i = Equip == true ? 1 : -1;
+        status.defense += 15 * i;
+    }
 }
 
 public class Item4 : Item
 {
     public Item4() : base("낡은 검          ", "  공격력 +2  ", "  쉽게 볼 수 있는 낡은 검 입니다.                   ", 600) { }
+
+    public override void EquipOption(Status status)
+    {
+        int i = Equip == true ? 1 : -1;
+        status.power += 2 * i;
+    }
 }
 
 public class Item5 : Item
 {
     public Item5() : base("청동 도끼        ", "  공격력 +5  ", "  어디선가 사용됐던 거 같은 도끼입니다.             ", 1500) { }
+
+    public override void EquipOption(Status status)
+    {
+        int i = Equip == true ? 1 : -1;
+        status.power += 5 * i;
+    }
 }
 
 public class Item6 : Item
 {
     public Item6() : base("스파르타의 창    ", "  공격력 +7  ", "  스파르타의 전사들이 사용했다는 전설의 창입니다.   ", 2500) { }
+
+    public override void EquipOption(Status status)
+    {
+        int i = Equip == true ? 1 : -1;
+        status.power += 7 * i;
+    }
 }
 
 
 public class Inventory
 {
-    List<Item> inventory;
+    public List<Item> inventory;
 
     public Inventory()
     {
@@ -279,7 +376,26 @@ public class Inventory
             int i = 1;
             foreach (Item _item in inventory)
             {
-                Console.WriteLine($"-  {_item.Name}" + "|" + $"{_item.Option}" + "|" + $"{_item.Explanation}");
+                if (_item.Equip == true) Console.WriteLine($"-  [E] {_item.Name}" + "|" + $"{_item.Option}" + "|" + $"{_item.Explanation}");
+                else Console.WriteLine($"-  {_item.Name}" + "|" + $"{_item.Option}" + "|" + $"{_item.Explanation}");
+                i++;
+            }
+        }
+    }
+
+    public void ItemEquip()
+    {
+        if (inventory.Count == 0)
+        {
+            Console.WriteLine("");
+        }
+        else
+        {
+            int i = 1;
+            foreach (Item _item in inventory)
+            {
+                if(_item.Equip == true) Console.WriteLine($"- {i} [E] {_item.Name}" + "|" + $"{_item.Option}" + "|" + $"{_item.Explanation}");
+                else Console.WriteLine($"- {i} {_item.Name}" + "|" + $"{_item.Option}" + "|" + $"{_item.Explanation}");
                 i++;
             }
         }
