@@ -53,6 +53,7 @@ public class Menu
 
             default:
                 Console.Clear();
+                Console.WriteLine("잘못된 입력입니다.");
                 ShowMenu();
                 break;
         }   
@@ -183,31 +184,20 @@ public class Menu
         Console.Write("\n0. 나가기\n\n원하시는 행동을 입력해주세요.\n>> ");
         string input = Console.ReadLine();
 
-        switch (input)
+        if (Int32.TryParse(input, out int x) && x <= shop.shop.Count && input != "0")
         {
-            case "0":
-                Console.Clear();
-                ShowMenu();
-                break;
-
-            case "1":
-
-            case "2":
-
-            case "3":
-
-            case "4":
-
-            case "5":
-
-            case "6":
-                CanBuy(input);
-                break;
-
-            default:
-                Console.Clear();
-                ShowBuyItem();
-                break;
+            CanBuy(input);
+        }
+        else if (input == "0")
+        {
+            Console.Clear();
+            ShowMenu();
+        }
+        else
+        {
+            Console.Clear();
+            Console.WriteLine("잘못된 입력입니다.");
+            ShowBuyItem();
         }
     }
 
@@ -224,13 +214,14 @@ public class Menu
             status.gold -= shop.shop[Int32.Parse(input) - 1].Price;
             inventory.inventory.Add(shop.shop[Int32.Parse(input) - 1]);
             shop.shop[Int32.Parse(input) - 1].CanBuy = false;
+            Console.WriteLine("\n구매를 완료했습니다.");
             Console.Clear();
             ShowBuyItem();
         }
         else
         {
             Console.Clear();
-            Console.WriteLine("\n보유골드가 부족합니다.");
+            Console.WriteLine("\nGold 가 부족합니다.");
             ShowBuyItem();
         }
     }
