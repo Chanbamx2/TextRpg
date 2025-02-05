@@ -234,7 +234,7 @@ public class Item // 아이템
 
 public class Item1 : Item   // 수련자 갑옷
 {
-    public Item1() : base("수련자 갑옷      ", "  방어력 +5  ", "  수련에 도움을 주는 갑옷입니다.                    ",1000) { }
+    public Item1() : base("수련자 갑옷      ", "  방어력 +5  ", "  수련에 도움을 주는 갑옷입니다.                          ", 1000) { }
 
     public override void EquipOption(Status status)
     {
@@ -245,7 +245,7 @@ public class Item1 : Item   // 수련자 갑옷
 
 public class Item2 : Item  // 무쇠갑옷
 {
-    public Item2() : base("무쇠갑옷         ", "  방어력 +9  ", "  무쇠로 만들어져 튼튼한 갑옷입니다.                ",2000) { }
+    public Item2() : base("무쇠갑옷         ", "  방어력 +9  ", "  무쇠로 만들어져 튼튼한 갑옷입니다.                      ", 2000) { }
 
     public override void EquipOption(Status status)
     {
@@ -256,7 +256,7 @@ public class Item2 : Item  // 무쇠갑옷
 
 public class Item3 : Item   // 스파르타의 갑옷
 {
-    public Item3() : base("스파르타의 갑옷  ", "  방어력 +15 ", "  스파르타의 전사들이 사용했다는 전설의 갑옷입니다. ",3500) { }
+    public Item3() : base("스파르타의 갑옷  ", "  방어력 +15 ", "  스파르타의 전사들이 사용했다는 전설의 갑옷입니다.       ", 3500) { }
 
     public override void EquipOption(Status status)
     {
@@ -267,7 +267,7 @@ public class Item3 : Item   // 스파르타의 갑옷
 
 public class Item4 : Item   // 낡은 검
 {
-    public Item4() : base("낡은 검          ", "  공격력 +2  ", "  쉽게 볼 수 있는 낡은 검 입니다.                   ", 600) { }
+    public Item4() : base("낡은 검          ", "  공격력 +2  ", "  쉽게 볼 수 있는 낡은 검 입니다.                         ", 600) { }
 
     public override void EquipOption(Status status)
     {
@@ -278,7 +278,7 @@ public class Item4 : Item   // 낡은 검
 
 public class Item5 : Item   // 청동 도끼
 {
-    public Item5() : base("청동 도끼        ", "  공격력 +5  ", "  어디선가 사용됐던 거 같은 도끼입니다.             ", 1500) { }
+    public Item5() : base("청동 도끼        ", "  공격력 +5  ", "  어디선가 사용됐던 거 같은 도끼입니다.                   ", 1500) { }
 
     public override void EquipOption(Status status)
     {
@@ -289,12 +289,23 @@ public class Item5 : Item   // 청동 도끼
 
 public class Item6 : Item   // 스파르타의 창
 {
-    public Item6() : base("스파르타의 창    ", "  공격력 +7  ", "  스파르타의 전사들이 사용했다는 전설의 창입니다.   ", 2500) { }
+    public Item6() : base("스파르타의 창    ", "  공격력 +7  ", "  스파르타의 전사들이 사용했다는 전설의 창입니다.         ", 2500) { }
 
     public override void EquipOption(Status status)
     {
         int i = IsEquip == true ? 1 : -1;
         status.power += 7 * i;
+    }
+}
+
+public class Item7 : Item   // 쿠키 슬라임
+{
+    public Item7() : base("쿠키 슬라임      ", "  체력 +10   ", "  코딩을 하다가 머리가 아플 때 도움이 될 수도 있습니다.   ", 3000) { }
+
+    public override void EquipOption(Status status)
+    {
+        int i = IsEquip == true ? 1 : -1;
+        status.health += 10 * i;
     }
 }
 
@@ -371,7 +382,8 @@ public class Shop   // 상점
             new Item3(),
             new Item4(),
             new Item5(),
-            new Item6()
+            new Item6(),
+            new Item7()
         };
     }
 
