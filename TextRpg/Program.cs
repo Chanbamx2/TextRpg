@@ -1,4 +1,6 @@
 ﻿
+using System;
+using System.Dynamic;
 using System.Xml.Linq;
 
 public class Menu
@@ -9,12 +11,15 @@ public class Menu
     public Inventory inventory;
     public Shop shop;
 
+    public DungeonList dungeonList;
+
     public Menu()
     {
-        menu = new List<string>() { "상태 보기", "인벤토리", "상점"};
+        menu = new List<string>() { "상태 보기", "인벤토리", "상점", "던전입장"};
         status = new Status();
         inventory = new Inventory();
         shop = new Shop();
+        dungeonList = new DungeonList();
     }
 
     public void ShowMenu()  // 메인메뉴 출력
@@ -49,6 +54,11 @@ public class Menu
                 ShowShop();
                 break;
 
+            case "4":
+                Console.Clear();
+                dungeonList.ChoiceDungeon(status, this);
+                break;
+
             default:
                 Console.Clear();
                 Console.WriteLine("\n잘못된 입력입니다.");
@@ -56,6 +66,7 @@ public class Menu
                 break;
         }   
     }
+
 
     public void ShowStatus() // 상태창 출력
     {
@@ -227,10 +238,12 @@ public class Menu
 public class Status // 스테이터스
 {
     public int level;
-    public int power;
+    public float power;
     public int defense;
     public int health;
     public int gold;
+    public int exp;
+    public int needExp;
     public string name;
     public string classes;
 
@@ -238,9 +251,23 @@ public class Status // 스테이터스
 
     public Status()
     {
-        level = 01; power = 10; defense = 5; health = 100; gold = 3500;
+        level = 01; power = 10; defense = 5; health = 100; gold = 1500; exp = 0; needExp = 1;
         name = "Chad"; classes = "( 전사 )";
         lev = level.ToString().Length == 1 ? $"0{level.ToString()}" : level.ToString() ;
+    }
+
+    public void LevelUp()
+    {
+        if (exp == needExp)
+        {
+            level++;
+            power += 0.5f;
+            defense++;
+            exp = 0;
+            needExp++;
+
+            Console.WriteLine($"\n레벨 업! 현재 레벨 : {level}");
+        }
     }
 }
 
@@ -270,7 +297,7 @@ public class Item // 아이템
 
 public class Item1 : Item   // 수련자 갑옷
 {
-    public Item1() : base("수련자 갑옷      ", "  방어력 +5  ", "  수련에 도움을 주는 갑옷입니다.                          ", 1000,"armor") { }
+    public Item1() : base("수련자 갑옷      ", "  방어력 + 5  ", "  수련에 도움을 주는 갑옷입니다.                          ", 1000,"armor") { }
 
     public override void EquipOption(Status status)
     {
@@ -281,7 +308,7 @@ public class Item1 : Item   // 수련자 갑옷
 
 public class Item2 : Item  // 무쇠갑옷
 {
-    public Item2() : base("무쇠갑옷         ", "  방어력 +9  ", "  무쇠로 만들어져 튼튼한 갑옷입니다.                      ", 2000,"armor") { }
+    public Item2() : base("무쇠갑옷         ", "  방어력 + 9  ", "  무쇠로 만들어져 튼튼한 갑옷입니다.                      ", 2000,"armor") { }
 
     public override void EquipOption(Status status)
     {
@@ -292,7 +319,7 @@ public class Item2 : Item  // 무쇠갑옷
 
 public class Item3 : Item   // 스파르타의 갑옷
 {
-    public Item3() : base("스파르타의 갑옷  ", "  방어력 +15 ", "  스파르타의 전사들이 사용했다는 전설의 갑옷입니다.       ", 3500, "armor") { }
+    public Item3() : base("스파르타의 갑옷  ", "  방어력 +15  ", "  스파르타의 전사들이 사용했다는 전설의 갑옷입니다.       ", 3500, "armor") { }
 
     public override void EquipOption(Status status)
     {
@@ -303,7 +330,7 @@ public class Item3 : Item   // 스파르타의 갑옷
 
 public class Item4 : Item   // 낡은 검
 {
-    public Item4() : base("낡은 검          ", "  공격력 +2  ", "  쉽게 볼 수 있는 낡은 검 입니다.                         ", 600, "weapon") { }
+    public Item4() : base("낡은 검          ", "  공격력 + 2  ", "  쉽게 볼 수 있는 낡은 검 입니다.                         ", 600, "weapon") { }
 
     public override void EquipOption(Status status)
     {
@@ -314,7 +341,7 @@ public class Item4 : Item   // 낡은 검
 
 public class Item5 : Item   // 청동 도끼
 {
-    public Item5() : base("청동 도끼        ", "  공격력 +5  ", "  어디선가 사용됐던 거 같은 도끼입니다.                   ", 1500, "weapon") { }
+    public Item5() : base("청동 도끼        ", "  공격력 + 5  ", "  어디선가 사용됐던 거 같은 도끼입니다.                   ", 1500, "weapon") { }
 
     public override void EquipOption(Status status)
     {
@@ -325,7 +352,7 @@ public class Item5 : Item   // 청동 도끼
 
 public class Item6 : Item   // 스파르타의 창
 {
-    public Item6() : base("스파르타의 창    ", "  공격력 +7  ", "  스파르타의 전사들이 사용했다는 전설의 창입니다.         ", 2500, "weapon") { }
+    public Item6() : base("스파르타의 창    ", "  공격력 + 7  ", "  스파르타의 전사들이 사용했다는 전설의 창입니다.         ", 2500, "weapon") { }
 
     public override void EquipOption(Status status)
     {
@@ -336,7 +363,7 @@ public class Item6 : Item   // 스파르타의 창
 
 public class Item7 : Item   // 쿠키 슬라임
 {
-    public Item7() : base("쿠키 슬라임      ", "  체력 +10   ", "  코딩을 하다가 머리가 아플 때 도움이 될 수도 있습니다.   ", 3000, "accessory") { }
+    public Item7() : base("쿠키 슬라임      ", "  체  력 +10  ", "  코딩을 하다가 머리가 아플 때 도움이 될 수도 있습니다.   ", 3000, "accessory") { }
 
     public override void EquipOption(Status status)
     {
@@ -516,6 +543,151 @@ public class Shop   // 상점
         status.gold += (int)(item.Price * 0.85f);
         Console.WriteLine("판매를 완료했습니다.");
     }
+}
+
+public class DungeonList    // 던전 리스트 관리
+{
+    public List<Dungeon> List;
+
+    public void ChoiceDungeon(Status status, Menu menu)     // 던전 난이도 선택창 출력
+    {
+        List = new List<Dungeon>() { new EasyDungeon(), new NormalDungeon(), new HardDungeon() };
+
+        Console.WriteLine("\n던전입장\n이 곳에서 던전으로 들어가기 전 활동을 할 수 있습니다.\n");
+       
+        int i = 1;
+
+        foreach (Dungeon dungeon in List)
+        {
+            string blank = $"{dungeon.Difficulty}".Length == 5 ? " " : "";
+            Console.WriteLine($"{i}. "+$"{dungeon.Difficulty}".PadRight(7)+ $"{blank}"+"| 방어력 "+$"{dungeon.RecommendedDefense}".PadLeft(2)+" 이상 권장");
+            i++;
+        }
+        Console.WriteLine("0. 나가기\n");
+        Console.Write("원하시는 행동을 입력해주세요.\n>>");
+
+        string input = Console.ReadLine();
+
+        DoDungeon(input, status, menu);
+    }
+
+    public void DoDungeon(string input, Status status, Menu menu)
+    {
+        if (input == "0")
+        {
+            menu.ShowMenu();
+        }
+        else if (Int32.TryParse(input, out int index) && index <= List.Count)
+        {
+            List[index - 1].EnterDungeon(status);
+            List[index - 1].ExitDungeon(menu);
+        }
+        else
+        {
+            Console.Clear();
+            Console.WriteLine("\n잘못된 입력입니다.");
+            ChoiceDungeon(status, menu);
+        }
+    }
+}
+
+public class Dungeon
+{
+    public int GetExp { get;}
+    public string Difficulty {  get;}
+    public int RecommendedDefense {  get;}
+    public int Damage {  get;}
+    public int Reward {  get;}
+    public bool CanEnter { get; private set; } = true;
+
+    Random random = new Random();
+
+    public Dungeon(string dif, int RD, int reward)
+    {
+        GetExp = 1;
+        Damage = random.Next(20, 36);
+        Difficulty = dif;
+        Reward = reward;
+        RecommendedDefense = RD;
+    }
+
+    public void EnterDungeon(Status status)
+    {
+        Console.Clear();
+        if (status.defense < RecommendedDefense)
+        {
+            Random random = new Random();
+            int i = random.Next(0, 4);
+
+            if (i < 4)
+            {
+                Fail(status);
+            }
+        }
+
+        if (CanEnter)
+        {
+            ClearDungeon(status);
+        }
+    }
+
+    public void ClearDungeon(Status status)
+    {
+        int AddReward = Reward * random.Next((int)status.power, (int)status.power * 2) / 100;
+        status.exp += GetExp;
+        int health = status.health;
+        status.health -= Damage - (status.defense - RecommendedDefense);
+        int gold = status.gold;
+        status.gold += Reward + AddReward;
+
+        Console.WriteLine($"\n던전 클리어\n축하합니다!!\n{Difficulty}을 클리어 하였습니다\n");
+        Console.WriteLine($"[탐험 결과]\n체력 {health} -> {status.health}\nGold {gold} G -> {status.gold} G");
+        status.LevelUp();
+    }
+
+    public void Fail(Status status)
+    {
+        Console.Clear();
+        CanEnter = false;
+        int health = status.health;
+        status.health -= (Damage - (status.defense - RecommendedDefense)) / 2;
+        Console.WriteLine($"\n던전 클리어 실패\n{Difficulty} 클리어에 실패하였습니다.\n");
+        Console.WriteLine($"[탐험 결과]\n체력 {health} -> {status.health}");
+    }
+
+    public void ExitDungeon(Menu menu)
+    {
+        Console.WriteLine("\n0. 퇴장하기\n");
+        Console.Write("원하시는 행동을 입력해주세요.\n>>");
+        string input = Console.ReadLine();
+
+        if (input == "0")
+        {
+            Console.Clear();
+            menu.ShowMenu();
+        }
+        else
+        {
+            Console.Clear();
+            Console.WriteLine("\n잘못된 입력입니다.");
+            ExitDungeon(menu);
+        }
+    }
+}
+
+public class EasyDungeon : Dungeon
+{
+    public EasyDungeon() : base("쉬운 던전", 5, 1000) { }
+}
+
+public class NormalDungeon : Dungeon
+{
+    public NormalDungeon() : base("일반 던전", 11, 1700) { }
+}
+
+public class HardDungeon : Dungeon
+{
+    public HardDungeon() : base("어려운 던전", 17, 2500) { }
 }
 
 class Program
