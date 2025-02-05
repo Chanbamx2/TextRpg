@@ -9,8 +9,6 @@ public class Menu
     public Inventory inventory;
     public Shop shop;
 
-    public int i;
-
     public Menu()
     {
         menu = new List<string>() { "상태 보기", "인벤토리", "상점"};
@@ -19,12 +17,12 @@ public class Menu
         shop = new Shop();
     }
 
-    public void ShowMenu()
+    public void ShowMenu()  // 메인메뉴 출력
     {
         Console.WriteLine("\n스파르타 마을에 오신 여러분 환영합니다.");
         Console.WriteLine("이곳에서 던전으로 들어가기전 활동을 할 수 있습니다.\n");
 
-        i = 1;
+        int i = 1;
         foreach (string m in menu)
         {
             Console.WriteLine($"{i}. {m}");
@@ -59,7 +57,7 @@ public class Menu
         }   
     }
 
-    public void ShowStatus()
+    public void ShowStatus() // 상태창 출력
     {
         Console.WriteLine("\n상태 보기\n캐릭터의 정보가 표시됩니다.\n");
         Console.WriteLine($"Lv. {status.lev}\n{status.name} {status.classes}\n공격력 : {status.power}\n방어력 : {status.defense}\n체 력 : {status.health}\nGold : {status.gold} G");
@@ -80,7 +78,7 @@ public class Menu
         }
     }
 
-    public void ShowInventoryList()
+    public void ShowInventoryList() // 인벤토리 출력
     {
         Console.WriteLine("\n인벤토리\n보유 중인 아이템을 관리할 수 있습니다.\n");
         Console.WriteLine($"[아이템 목록]");
@@ -107,7 +105,7 @@ public class Menu
         }
     }
 
-    public void ShowEquipList()
+    public void ShowEquipList() // 장착 관리 출력
     {
         Console.WriteLine("\n인벤토리 - 장착 관리\n보유 중인 아이템을 관리할 수 있습니다.\n");
         Console.WriteLine($"[아이템 목록]");
@@ -132,7 +130,7 @@ public class Menu
         }
     }
 
-    public void Equip(string input)
+    public void Equip(string input) // 아이템 장착
     {
         if (inventory.inventory[Int32.Parse(input) - 1].Equip == false)
         {
@@ -147,7 +145,7 @@ public class Menu
         ShowEquipList();
     }
 
-    public void ShowShopList()
+    public void ShowShopList() // 상점 아이템 출력
     {
         Console.WriteLine("\n상점\n필요한 아이템을 얻을 수 있는 상점입니다.\n");
         Console.WriteLine($"[보유골드]\n{status.gold} G");
@@ -175,7 +173,7 @@ public class Menu
         }
     }
 
-    public void ShowBuyItem()
+    public void ShowBuyItem() // 아이템 구매창 출력
     {
         Console.WriteLine("\n상점 - 아이템 구매\n필요한 아이템을 얻을 수 있는 상점입니다.\n");
         Console.WriteLine($"[보유골드]\n{status.gold} G");
@@ -186,7 +184,7 @@ public class Menu
 
         if (Int32.TryParse(input, out int x) && x <= shop.shop.Count && input != "0")
         {
-            CanBuy(input);
+            BuyItem(input);
         }
         else if (input == "0")
         {
@@ -201,7 +199,7 @@ public class Menu
         }
     }
 
-    public void CanBuy(string input)
+    public void BuyItem(string input) // 아이템 구매
     {
         if (shop.shop[Int32.Parse(input) - 1].CanBuy == false)
         {
