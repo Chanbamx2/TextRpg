@@ -41,12 +41,12 @@ public class Menu
 
             case "2":
                 Console.Clear();
-                ShowInventoryList();
+                ShowInventory();
                 break;
 
             case "3":
                 Console.Clear();
-                ShowShopList();
+                ShowShop();
                 break;
 
             default:
@@ -78,7 +78,7 @@ public class Menu
         }
     }
 
-    public void ShowInventoryList() // 인벤토리 출력
+    public void ShowInventory() // 인벤토리 출력
     {
         Console.WriteLine("\n인벤토리\n보유 중인 아이템을 관리할 수 있습니다.\n");
         Console.WriteLine($"[아이템 목록]");
@@ -90,7 +90,7 @@ public class Menu
         {
             case "1":
                 Console.Clear();
-                ShowEquipList();
+                ShowEquipManagement();
                 break;
 
             case "0":
@@ -100,52 +100,52 @@ public class Menu
 
             default:
                 Console.Clear();
-                ShowInventoryList();
+                ShowInventory();
                 break;
         }
     }
 
-    public void ShowEquipList() // 장착 관리 출력
+    public void ShowEquipManagement() // 장착 관리 출력
     {
         Console.WriteLine("\n인벤토리 - 장착 관리\n보유 중인 아이템을 관리할 수 있습니다.\n");
         Console.WriteLine($"[아이템 목록]");
-        inventory.ItemEquip();
+        inventory.EquipItemList();
         Console.Write("\n0. 나가기\n\n원하시는 행동을 입력해주세요.\n>> ");
         string input = Console.ReadLine();
 
-        if (Int32.TryParse(input, out int x) && x <= inventory.inventory.Count && input != "0")
+        if (Int32.TryParse(input, out int x) && x <= inventory.itemList.Count && input != "0")
         {
-            Equip(input);
+            EquipItem(input);
         }
         else if(input == "0")
         {
             Console.Clear();
-            ShowInventoryList();
+            ShowInventory();
         }
         else
         {
             Console.Clear();
             Console.WriteLine("잘못된 입력입니다.");
-            ShowEquipList();
+            ShowEquipManagement();
         }
     }
 
-    public void Equip(string input) // 아이템 장착
+    public void EquipItem(string input) // 아이템 장착
     {
-        if (inventory.inventory[Int32.Parse(input) - 1].Equip == false)
+        if (inventory.itemList[Int32.Parse(input) - 1].IsEquip == false)
         {
-            inventory.inventory[Int32.Parse(input) - 1].Equip = true;
+            inventory.itemList[Int32.Parse(input) - 1].IsEquip = true;
         }
         else
         {
-            inventory.inventory[Int32.Parse(input) - 1].Equip = false;
+            inventory.itemList[Int32.Parse(input) - 1].IsEquip = false;
         }
-        inventory.inventory[Int32.Parse(input) - 1].EquipOption(status);
+        inventory.itemList[Int32.Parse(input) - 1].EquipOption(status);
         Console.Clear();
-        ShowEquipList();
+        ShowEquipManagement();
     }
 
-    public void ShowShopList() // 상점 아이템 출력
+    public void ShowShop() // 상점 아이템 출력
     {
         Console.WriteLine("\n상점\n필요한 아이템을 얻을 수 있는 상점입니다.\n");
         Console.WriteLine($"[보유골드]\n{status.gold} G");
@@ -168,7 +168,7 @@ public class Menu
 
             default:
                 Console.Clear();
-                ShowShopList();
+                ShowShop();
                 break;
         }
     }
@@ -178,11 +178,11 @@ public class Menu
         Console.WriteLine("\n상점 - 아이템 구매\n필요한 아이템을 얻을 수 있는 상점입니다.\n");
         Console.WriteLine($"[보유골드]\n{status.gold} G");
         Console.WriteLine($"\n[아이템 목록]");
-        shop.BuyItem();
+        shop.BuyItemList();
         Console.Write("\n0. 나가기\n\n원하시는 행동을 입력해주세요.\n>> ");
         string input = Console.ReadLine();
 
-        if (Int32.TryParse(input, out int x) && x <= shop.shop.Count && input != "0")
+        if (Int32.TryParse(input, out int x) && x <= shop.itemList.Count && input != "0")
         {
             BuyItem(input);
         }
@@ -201,17 +201,17 @@ public class Menu
 
     public void BuyItem(string input) // 아이템 구매
     {
-        if (shop.shop[Int32.Parse(input) - 1].CanBuy == false)
+        if (shop.itemList[Int32.Parse(input) - 1].CanBuy == false)
         {
             Console.Clear();
             Console.WriteLine("\n이미 구매한 아이템입니다.");
             ShowBuyItem();
         }
-        else if (status.gold >= shop.shop[Int32.Parse(input) - 1].Price)
+        else if (status.gold >= shop.itemList[Int32.Parse(input) - 1].Price)
         {
-            status.gold -= shop.shop[Int32.Parse(input) - 1].Price;
-            inventory.inventory.Add(shop.shop[Int32.Parse(input) - 1]);
-            shop.shop[Int32.Parse(input) - 1].CanBuy = false;
+            status.gold -= shop.itemList[Int32.Parse(input) - 1].Price;
+            inventory.itemList.Add(shop.itemList[Int32.Parse(input) - 1]);
+            shop.itemList[Int32.Parse(input) - 1].CanBuy = false;
             Console.WriteLine("\n구매를 완료했습니다.");
             Console.Clear();
             ShowBuyItem();
@@ -225,7 +225,7 @@ public class Menu
     }
 }
 
-public class Status
+public class Status // 스테이터스
 {
     public int level;
     public int power;
@@ -245,14 +245,14 @@ public class Status
     }
 }
 
-public class Item
+public class Item // 아이템
 {
     public string Name { get; set; }
     public string Option { get; }
     public string Explanation { get; }
 
     public bool CanBuy { get; set; } = true;
-    public bool Equip { get; set; } = false;
+    public bool IsEquip { get; set; } = false;
 
     public int Price { get; }
 
@@ -267,131 +267,130 @@ public class Item
     public virtual void EquipOption(Status status) { }
 }
 
-public class Item1 : Item
+public class Item1 : Item   // 수련자 갑옷
 {
     public Item1() : base("수련자 갑옷      ", "  방어력 +5  ", "  수련에 도움을 주는 갑옷입니다.                    ",1000) { }
 
     public override void EquipOption(Status status)
     {
-        int i = Equip == true ? 1 : -1;
+        int i = IsEquip == true ? 1 : -1;
         status.defense += 5 * i;
     }
 }
 
-public class Item2 : Item
+public class Item2 : Item  // 무쇠갑옷
 {
     public Item2() : base("무쇠갑옷         ", "  방어력 +9  ", "  무쇠로 만들어져 튼튼한 갑옷입니다.                ",2000) { }
 
     public override void EquipOption(Status status)
     {
-        int i = Equip == true ? 1 : -1;
+        int i = IsEquip == true ? 1 : -1;
         status.defense += 9 * i;
     }
 }
 
-public class Item3 : Item
+public class Item3 : Item   // 스파르타의 갑옷
 {
     public Item3() : base("스파르타의 갑옷  ", "  방어력 +15 ", "  스파르타의 전사들이 사용했다는 전설의 갑옷입니다. ",3500) { }
 
     public override void EquipOption(Status status)
     {
-        int i = Equip == true ? 1 : -1;
+        int i = IsEquip == true ? 1 : -1;
         status.defense += 15 * i;
     }
 }
 
-public class Item4 : Item
+public class Item4 : Item   // 낡은 검
 {
     public Item4() : base("낡은 검          ", "  공격력 +2  ", "  쉽게 볼 수 있는 낡은 검 입니다.                   ", 600) { }
 
     public override void EquipOption(Status status)
     {
-        int i = Equip == true ? 1 : -1;
+        int i = IsEquip == true ? 1 : -1;
         status.power += 2 * i;
     }
 }
 
-public class Item5 : Item
+public class Item5 : Item   // 청동 도끼
 {
     public Item5() : base("청동 도끼        ", "  공격력 +5  ", "  어디선가 사용됐던 거 같은 도끼입니다.             ", 1500) { }
 
     public override void EquipOption(Status status)
     {
-        int i = Equip == true ? 1 : -1;
+        int i = IsEquip == true ? 1 : -1;
         status.power += 5 * i;
     }
 }
 
-public class Item6 : Item
+public class Item6 : Item   // 스파르타의 창
 {
     public Item6() : base("스파르타의 창    ", "  공격력 +7  ", "  스파르타의 전사들이 사용했다는 전설의 창입니다.   ", 2500) { }
 
     public override void EquipOption(Status status)
     {
-        int i = Equip == true ? 1 : -1;
+        int i = IsEquip == true ? 1 : -1;
         status.power += 7 * i;
     }
 }
 
-
-public class Inventory
+public class Inventory // 인벤토리
 {
-    public List<Item> inventory;
+    public List<Item> itemList;
 
     public Inventory()
     {
-        inventory = new List<Item>();
+        itemList = new List<Item>();
     }
 
-    public void ItemList()
+    public void ItemList() // 인벤토리 아이템 리스트 출력
     {
-        if (inventory.Count == 0)
+        if (itemList.Count == 0)
         {
             Console.WriteLine("");
         }
         else
         {
             int i = 1;
-            foreach (Item _item in inventory)
+            foreach (Item item in itemList)
             {
-                if (_item.Equip == true) Console.WriteLine($"-  [E] {_item.Name}" + "|" + $"{_item.Option}" + "|" + $"{_item.Explanation}");
-                else Console.WriteLine($"-  {_item.Name}" + "|" + $"{_item.Option}" + "|" + $"{_item.Explanation}");
+                if (item.IsEquip == true) Console.WriteLine($"-  [E] {item.Name}" + "|" + $"{item.Option}" + "|" + $"{item.Explanation}");
+                else Console.WriteLine($"-  {item.Name}" + "|" + $"{item.Option}" + "|" + $"{item.Explanation}");
                 i++;
             }
         }
     }
 
-    public void ItemEquip()
+    public void EquipItemList() // 장착 관리 아이템 리스트 출력
     {
-        if (inventory.Count == 0)
+        if (itemList.Count == 0)
         {
             Console.WriteLine("");
         }
         else
         {
             int i = 1;
-            foreach (Item _item in inventory)
+            foreach (Item item in itemList)
             {
-                if(_item.Equip == true) Console.WriteLine($"- {i} [E] {_item.Name}" + "|" + $"{_item.Option}" + "|" + $"{_item.Explanation}");
-                else Console.WriteLine($"- {i} {_item.Name}" + "|" + $"{_item.Option}" + "|" + $"{_item.Explanation}");
+                if(item.IsEquip == true) Console.WriteLine($"- {i} [E] {item.Name}" + "|" + $"{item.Option}" + "|" + $"{item.Explanation}");
+                else Console.WriteLine($"- {i} {item.Name}" + "|" + $"{item.Option}" + "|" + $"{item.Explanation}");
                 i++;
             }
         }
     }
 }
 
-public class Shop
+public class Shop   // 상점
 {
-    public List<Item> shop;
+    public List<Item> itemList;
 
     public Shop()
     {
-        shop = new List<Item>();
+        itemList = new List<Item>();
     }
 
-    public void ItemList()
+    public void ItemList()  // 상점 아이템 리스트 출력
     {
-        if (shop.Count == 0)
+        if (itemList.Count == 0)
         {
             Console.WriteLine("");
         }
@@ -399,28 +398,28 @@ public class Shop
         {
             int i = 1;
             
-            foreach (Item _item in shop)
+            foreach (Item item in itemList)
             {
-                string price = _item.CanBuy == true ? _item.Price.ToString() : "구매 완료";
-                Console.WriteLine($"-  {_item.Name}" + "|" + $"{_item.Option}" + "|" + $"{_item.Explanation}"+ "|"+ $"  {price}G".PadLeft(7));
+                string price = item.CanBuy == true ? item.Price.ToString() : "구매 완료";
+                Console.WriteLine($"-  {item.Name}" + "|" + $"{item.Option}" + "|" + $"{item.Explanation}"+ "|"+ $"  {price}G".PadLeft(7));
                 i++;
             }
         }
     }
 
-    public void BuyItem()
+    public void BuyItemList()   // 아이템 구매 리스트 출력
     {
-        if (shop.Count == 0)
+        if (itemList.Count == 0)
         {
             Console.WriteLine("");
         }
         else
         {
             int i = 1;
-            foreach (Item _item in shop)
+            foreach (Item item in itemList)
             {
-                string price = _item.CanBuy == true ? _item.Price.ToString() + "G" : "구매 완료";
-                Console.WriteLine($"- {i} {_item.Name}" + "|" + $"{_item.Option}" + "|" + $"{_item.Explanation}" + "|" + $"  {price}".PadLeft(7));
+                string price = item.CanBuy == true ? item.Price.ToString() + "G" : "구매 완료";
+                Console.WriteLine($"- {i} {item.Name}" + "|" + $"{item.Option}" + "|" + $"{item.Explanation}" + "|" + $"  {price}".PadLeft(7));
                 i++;
             }
         }
@@ -440,12 +439,12 @@ class Program
         Item5 item5 = new Item5();
         Item6 item6 = new Item6();
 
-        menu.shop.shop.Add(item1);
-        menu.shop.shop.Add(item2);
-        menu.shop.shop.Add(item3);
-        menu.shop.shop.Add(item4);
-        menu.shop.shop.Add(item5);
-        menu.shop.shop.Add(item6);
+        menu.shop.itemList.Add(item1);
+        menu.shop.itemList.Add(item2);
+        menu.shop.itemList.Add(item3);
+        menu.shop.itemList.Add(item4);
+        menu.shop.itemList.Add(item5);
+        menu.shop.itemList.Add(item6);
 
         menu.ShowMenu();
     }
