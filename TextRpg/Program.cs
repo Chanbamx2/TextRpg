@@ -114,31 +114,20 @@ public class Menu
         Console.Write("\n0. 나가기\n\n원하시는 행동을 입력해주세요.\n>> ");
         string input = Console.ReadLine();
 
-        switch (input)
+        if (Int32.TryParse(input, out int x) && x <= inventory.inventory.Count && input != "0")
         {
-            case "1":
-
-            case "2":
-
-            case "3":
-
-            case "4":
-
-            case "5":
-
-            case "6":
-                Equip(input);
-                break;
-
-            case "0":
-                Console.Clear();
-                ShowInventoryList();
-                break;
-
-            default:
-                Console.Clear();
-                ShowEquipList();
-                break;
+            Equip(input);
+        }
+        else if(input == "0")
+        {
+            Console.Clear();
+            ShowInventoryList();
+        }
+        else
+        {
+            Console.Clear();
+            Console.WriteLine("잘못된 입력입니다.");
+            ShowEquipList();
         }
     }
 
