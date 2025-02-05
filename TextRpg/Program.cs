@@ -51,7 +51,7 @@ public class Menu
 
             default:
                 Console.Clear();
-                Console.WriteLine("잘못된 입력입니다.");
+                Console.WriteLine("\n잘못된 입력입니다.");
                 ShowMenu();
                 break;
         }   
@@ -100,6 +100,7 @@ public class Menu
 
             default:
                 Console.Clear();
+                Console.WriteLine("\n잘못된 입력입니다.");
                 ShowInventory();
                 break;
         }
@@ -113,36 +114,23 @@ public class Menu
         Console.Write("\n0. 나가기\n\n원하시는 행동을 입력해주세요.\n>> ");
         string input = Console.ReadLine();
 
-        if (Int32.TryParse(input, out int x) && x <= inventory.itemList.Count && input != "0")
-        {
-            EquipItem(input);
-        }
-        else if(input == "0")
+        if(input == "0")
         {
             Console.Clear();
             ShowInventory();
         }
+        else if (Int32.TryParse(input, out int index) && index <= inventory.itemList.Count)
+        {
+            inventory.EquipItem(index - 1, status);
+            Console.Clear();
+            ShowEquipManagement();
+        }
         else
         {
             Console.Clear();
-            Console.WriteLine("잘못된 입력입니다.");
+            Console.WriteLine("\n잘못된 입력입니다.");
             ShowEquipManagement();
         }
-    }
-
-    public void EquipItem(string input) // 아이템 장착
-    {
-        if (inventory.itemList[Int32.Parse(input) - 1].IsEquip == false)
-        {
-            inventory.itemList[Int32.Parse(input) - 1].IsEquip = true;
-        }
-        else
-        {
-            inventory.itemList[Int32.Parse(input) - 1].IsEquip = false;
-        }
-        inventory.itemList[Int32.Parse(input) - 1].EquipOption(status);
-        Console.Clear();
-        ShowEquipManagement();
     }
 
     public void ShowShop() // 상점 아이템 출력
@@ -182,44 +170,21 @@ public class Menu
         Console.Write("\n0. 나가기\n\n원하시는 행동을 입력해주세요.\n>> ");
         string input = Console.ReadLine();
 
-        if (Int32.TryParse(input, out int x) && x <= shop.itemList.Count && input != "0")
-        {
-            BuyItem(input);
-        }
-        else if (input == "0")
+        if (input == "0")
         {
             Console.Clear();
             ShowMenu();
         }
-        else
+        else if (Int32.TryParse(input, out int index) && index <= shop.itemList.Count)
         {
             Console.Clear();
-            Console.WriteLine("잘못된 입력입니다.");
-            ShowBuyItem();
-        }
-    }
-
-    public void BuyItem(string input) // 아이템 구매
-    {
-        if (shop.itemList[Int32.Parse(input) - 1].CanBuy == false)
-        {
-            Console.Clear();
-            Console.WriteLine("\n이미 구매한 아이템입니다.");
-            ShowBuyItem();
-        }
-        else if (status.gold >= shop.itemList[Int32.Parse(input) - 1].Price)
-        {
-            status.gold -= shop.itemList[Int32.Parse(input) - 1].Price;
-            inventory.itemList.Add(shop.itemList[Int32.Parse(input) - 1]);
-            shop.itemList[Int32.Parse(input) - 1].CanBuy = false;
-            Console.WriteLine("\n구매를 완료했습니다.");
-            Console.Clear();
+            shop.BuyItem(index - 1, status, inventory);
             ShowBuyItem();
         }
         else
         {
             Console.Clear();
-            Console.WriteLine("\nGold 가 부족합니다.");
+            Console.WriteLine("\n잘못된 입력입니다.");
             ShowBuyItem();
         }
     }
@@ -377,6 +342,20 @@ public class Inventory // 인벤토리
             }
         }
     }
+
+    public void EquipItem(int index, Status status) // 아이템 장착
+    {
+        Item item = itemList[index];
+        if (item.IsEquip == false)
+        {
+            item.IsEquip = true;
+        }
+        else
+        {
+            item.IsEquip = false;
+        }
+        item.EquipOption(status);
+    }
 }
 
 public class Shop   // 상점
@@ -385,7 +364,15 @@ public class Shop   // 상점
 
     public Shop()
     {
-        itemList = new List<Item>();
+        itemList = new List<Item>()
+        {
+            new Item1(),
+            new Item2(),
+            new Item3(),
+            new Item4(),
+            new Item5(),
+            new Item6()
+        };
     }
 
     public void ItemList()  // 상점 아이템 리스트 출력
@@ -424,6 +411,26 @@ public class Shop   // 상점
             }
         }
     }
+
+    public void BuyItem(int index, Status status,Inventory inventory) // 아이템 구매
+    {
+        Item item = itemList[index];
+        if (itemList[index].CanBuy == false)
+        {
+            Console.WriteLine("\n이미 구매한 아이템입니다.");
+        }
+        else if (status.gold >= itemList[index].Price)
+        {
+            status.gold -= itemList[index].Price;
+            inventory.itemList.Add(itemList[index]);
+            itemList[index].CanBuy = false;
+            Console.WriteLine("\n구매를 완료했습니다.");
+        }
+        else
+        {
+            Console.WriteLine("\nGold 가 부족합니다.");
+        }
+    }
 }
 
 class Program
@@ -431,20 +438,6 @@ class Program
     static void Main(string[] args)
     {
         Menu menu = new Menu();
-
-        Item1 item1 = new Item1();
-        Item2 item2 = new Item2();
-        Item3 item3 = new Item3();
-        Item4 item4 = new Item4();
-        Item5 item5 = new Item5();
-        Item6 item6 = new Item6();
-
-        menu.shop.itemList.Add(item1);
-        menu.shop.itemList.Add(item2);
-        menu.shop.itemList.Add(item3);
-        menu.shop.itemList.Add(item4);
-        menu.shop.itemList.Add(item5);
-        menu.shop.itemList.Add(item6);
 
         menu.ShowMenu();
     }
